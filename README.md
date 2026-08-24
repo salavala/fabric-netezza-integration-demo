@@ -130,23 +130,169 @@ The command is idempotent for those names. It uses absolute GUID-based OneLake
 paths, so the notebook does not depend on an attached default Lakehouse.
 Deployment output is saved locally to the ignored `deployment-state.json`.
 
-## Demo execution
+## Step-by-step demo execution
 
-1. Open the new **IBM Netezza Fabric Integration Demo** workspace.
-2. Open **NetezzaMigrationLakehouse**.
-3. Under **Files**, inspect `netezza_export\manifest.json` and the four `.tbl`
-   exports.
-4. Under **Tables**, show the four typed Delta tables.
-5. Open **Load Netezza Synthetic Exports** and run all cells.
-6. Inspect `Files\validation\load_report.json`.
-7. Confirm all source and Fabric row counts match.
-8. Confirm order sales and line sales both equal `$12,333,986.08`.
-9. Confirm customer, order, and product orphan counts are all zero.
-10. Use the Lakehouse SQL analytics endpoint for a business query:
+Allow approximately 15 minutes for this walkthrough. The deployment command
+must have completed before starting.
+
+### 1. Introduce the migration scenario
+
+Explain that the source represents an on-premises Netezza sales warehouse. The
+demo proves four parts of a modernization project:
+
+1. Export data in a Netezza-compatible interchange format.
+2. Land the unchanged source extracts in OneLake.
+3. Convert source values into strongly typed Delta tables.
+4. Reconcile the migrated data before it is released for analytics.
+
+Point out that the simulation can be replaced with an actual Netezza connector
+without changing the target Lakehouse design.
+
+### 2. Review the generated Netezza exports
+
+From the repository root, regenerate the deterministic source data:
+
+```powershell
+python .\generate_netezza_data.py
+```
+
+Open `data\netezza_export\manifest.json` and highlight:
+
+- `format`: identifies the external-table export simulation.
+- `delimiter`: confirms that fields are pipe-delimited.
+- `null_value`: shows the Netezza-style `\N` null marker.
+- `seed`: makes the sample repeatable.
+- `tables`: documents source types, row counts, filenames, and checksums.
+- `reconciliation`: records the source financial control totals.
+
+Open `customer_dim.tbl` and `order_line_fact.tbl` to show the header row,
+pipe-delimited values, and a `\N` customer loyalty value.
+
+**Expected source baseline**
+
+| Table | Expected rows |
+|---|---:|
+| `customer_dim` | 200 |
+| `product_dim` | 40 |
+| `order_fact` | 1,500 |
+| `order_line_fact` | 4,440 |
+
+### 3. Show the automated deployment
+
+Run the deployment if it has not already been completed:
+
+```powershell
+python .\deploy_to_fabric.py `
+  --capacity-id <fabric-capacity-guid>
+```
+
+Explain that this single command generates the files, creates or reuses the
+workspace and Lakehouse, uploads the files, deploys the notebook, executes the
+load, and validates the result.
+
+At completion, review the JSON displayed in the terminal. Confirm:
+
+- `notebook_run.status` is `Completed`.
+- `source_reconciliation.row_counts` matches
+  `fabric_load_report.row_counts`.
+- `order_sales` and `line_sales` are both `12333986.08`.
+- All three orphan counts are zero.
+
+### 4. Inspect the Fabric workspace
+
+1. Sign in to the [Microsoft Fabric portal](https://app.fabric.microsoft.com).
+2. Open **Workspaces**.
+3. Select **IBM Netezza Fabric Integration Demo**.
+4. Confirm the workspace contains:
+   - **NetezzaMigrationLakehouse**
+   - **Load Netezza Synthetic Exports**
+5. Open **NetezzaMigrationLakehouse**.
+6. In the Explorer, expand **Files** and then `netezza_export`.
+7. Confirm that `manifest.json` and the four `.tbl` files are present.
+8. Expand **Tables** and confirm that the four Delta tables are registered.
+
+This demonstrates the Bronze-like retention of source extracts alongside
+analytics-ready Delta tables.
+
+### 5. Walk through the transformation notebook
+
+Open **Load Netezza Synthetic Exports** and explain the important sections:
+
+1. `lakehouse_root` uses an absolute GUID-based OneLake path, allowing the
+   notebook to run without a manually attached default Lakehouse.
+2. `casts` maps Netezza data types to Spark data types.
+3. Each `.tbl` file is read with a header, `|` separator, and `\N` null value.
+4. Each DataFrame overwrites its corresponding Delta table with schema
+   replacement enabled.
+5. The final section compares order and line sales and checks all foreign-key
+   relationships.
+6. The results are persisted to
+   `Files\validation\load_report.json`.
+
+Select **Run all**. The notebook is idempotent, so rerunning it safely replaces
+the demo tables.
+
+**Expected result:** the run completes successfully and displays one row
+containing the four table counts.
+
+### 6. Validate the migration controls
+
+In the Lakehouse Explorer, open
+`Files\validation\load_report.json`. Confirm:
+
+```json
+{
+  "row_counts": {
+    "customer_dim": 200,
+    "product_dim": 40,
+    "order_fact": 1500,
+    "order_line_fact": 4440
+  },
+  "order_sales": "12333986.08",
+  "line_sales": "12333986.08",
+  "orphan_orders": 0,
+  "orphan_lines": 0,
+  "orphan_products": 0
+}
+```
+
+Compare this report with the `reconciliation` section in
+`Files\netezza_export\manifest.json`. Explain that production migrations should
+apply the same control pattern to every load batch.
+
+### 7. Query the migrated data
+
+From the Lakehouse, select **SQL analytics endpoint** and open a new SQL query.
+
+First, verify the row counts:
+
+```sql
+SELECT 'customer_dim' AS table_name, COUNT(*) AS row_count
+FROM dbo.customer_dim
+UNION ALL
+SELECT 'product_dim', COUNT(*) FROM dbo.product_dim
+UNION ALL
+SELECT 'order_fact', COUNT(*) FROM dbo.order_fact
+UNION ALL
+SELECT 'order_line_fact', COUNT(*) FROM dbo.order_line_fact;
+```
+
+Next, reconcile the two financial totals:
+
+```sql
+SELECT
+    (SELECT SUM(order_total) FROM dbo.order_fact) AS order_sales,
+    (SELECT SUM(line_total) FROM dbo.order_line_fact) AS line_sales;
+```
+
+Both columns should return `12333986.08`.
+
+Finally, show a business insight by industry:
 
 ```sql
 SELECT
     c.industry,
+    COUNT(DISTINCT o.order_id) AS order_count,
     SUM(o.order_total) AS net_sales
 FROM dbo.order_fact AS o
 JOIN dbo.customer_dim AS c
@@ -154,6 +300,29 @@ JOIN dbo.customer_dim AS c
 GROUP BY c.industry
 ORDER BY net_sales DESC;
 ```
+
+Explain that the migrated Delta tables are immediately available to SQL,
+Power BI, notebooks, and downstream Fabric workloads without copying the data.
+
+### 8. Demonstrate repeatability
+
+Return to the terminal and run the same deployment command again:
+
+```powershell
+python .\deploy_to_fabric.py `
+  --capacity-id <fabric-capacity-guid>
+```
+
+The script reuses the existing workspace, Lakehouse, and notebook, replaces the
+source files and Delta tables, and runs all reconciliation controls again.
+
+**Demo completion criteria**
+
+- The Fabric notebook run has status `Completed`.
+- All four Fabric row counts match the source manifest.
+- Order sales equal line sales and the source net-sales total.
+- Customer, order, and product orphan counts are zero.
+- The SQL analytics endpoint returns the expected business results.
 
 ## Replace the simulation with a real Netezza source
 
