@@ -244,115 +244,170 @@ This approach avoids session-level package installation in automated Fabric
 notebook jobs. The local `read_with_iceberg_api.py` remains the external
 PyIceberg client demonstration.
 
-## Step-by-step demo execution
+## Presenter-ready step-by-step demo execution
 
-Allow approximately 15 minutes for this walkthrough. The deployment command
-must have completed before starting.
+Allow 20-25 minutes for the full walkthrough. The Lakehouse path and Table API
+notebook can be presented without the Warehouse load. Treat the Warehouse
+section as an optional extension until its tables are populated.
 
-### 1. Introduce the migration scenario
+### Presenter preparation
 
-Explain that the source represents an on-premises Netezza sales warehouse. The
-demo proves four parts of a modernization project:
+Complete these steps before the audience joins:
 
-1. Export data in a Netezza-compatible interchange format.
-2. Land the unchanged source extracts in OneLake.
-3. Convert source values into strongly typed Delta tables.
-4. Reconcile the migrated data before it is released for analytics.
+1. Sign in with `az login`.
+2. Confirm that **IBM Netezza Fabric Integration Demo** is visible in the
+   Fabric portal.
+3. Run the Lakehouse deployment if needed:
 
-Point out that the simulation can be replaced with an actual Netezza connector
-without changing the target Lakehouse design.
+   ```powershell
+   python .\deploy_to_fabric.py `
+     --capacity-id <fabric-capacity-guid>
+   ```
 
-### 2. Review the generated Netezza exports
+4. Deploy and run the Table API notebook:
 
-From the repository root, regenerate the deterministic source data:
+   ```powershell
+   python .\deploy_table_api_demo.py
+   ```
 
-```powershell
-python .\generate_netezza_data.py
-```
+5. Confirm that both commands report a completed notebook run.
+6. Keep these browser tabs ready:
+   - The Fabric workspace home page
+   - **NetezzaMigrationLakehouse**
+   - **Load Netezza Synthetic Exports**
+   - **OneLake Iceberg Table API Demo**
+   - The Lakehouse SQL analytics endpoint
+7. Keep `data\netezza_export\manifest.json` open in an editor.
 
-Open `data\netezza_export\manifest.json` and highlight:
+**Known current state:** the Lakehouse catalog is `ready`. The Warehouse
+catalog is reachable but reports `incomplete` until
+`deploy_to_warehouse.py` successfully populates its four tables. This status
+does not prevent the main demo from completing.
 
-- `format`: identifies the external-table export simulation.
-- `delimiter`: confirms that fields are pipe-delimited.
-- `null_value`: shows the Netezza-style `\N` null marker.
-- `seed`: makes the sample repeatable.
-- `tables`: documents source types, row counts, filenames, and checksums.
-- `reconciliation`: records the source financial control totals.
+### 1. Set the business context - 1 minute
 
-Open `customer_dim.tbl` and `order_line_fact.tbl` to show the header row,
-pipe-delimited values, and a `\N` customer loyalty value.
+**Say**
 
-**Expected source baseline**
+> We are modernizing an on-premises IBM Netezza sales warehouse into Microsoft
+> Fabric. The goal is not only to move rows, but to preserve source fidelity,
+> validate financial controls, provide immediate analytics, and expose the
+> migrated tables through an open Iceberg interface.
 
-| Table | Expected rows |
+Explain that the demo proves:
+
+1. Netezza-compatible export generation.
+2. Raw file retention in OneLake.
+3. Typed Delta and optional Warehouse loading.
+4. Automated reconciliation and referential-integrity controls.
+5. SQL analytics without another data copy.
+6. Open interoperability through OneLake Iceberg Table APIs.
+
+### 2. Show the Netezza-style source - 2 minutes
+
+**Do**
+
+1. Open `data\netezza_export\manifest.json`.
+2. Show `delimiter`, `null_value`, `seed`, `tables`, and `reconciliation`.
+3. Open `customer_dim.tbl` and point out the pipe delimiter and `\N` null value.
+4. Open `order_line_fact.tbl` and show product, quantity, discount, and total.
+
+**Say**
+
+> The source simulator behaves like a controlled Netezza external-table
+> export. Every file has a checksum and expected row count, and the manifest
+> carries financial totals that must survive the migration.
+
+**Expected baseline**
+
+| Table | Rows |
 |---|---:|
 | `customer_dim` | 200 |
 | `product_dim` | 40 |
 | `order_fact` | 1,500 |
 | `order_line_fact` | 4,440 |
 
-### 3. Show the automated deployment
+| Control total | Value |
+|---|---:|
+| Gross sales | $12,974,389.75 |
+| Discounts | $640,403.67 |
+| Net sales | $12,333,986.08 |
 
-Run the deployment if it has not already been completed:
+### 3. Explain the automated Lakehouse deployment - 2 minutes
+
+**Do**
+
+Show the command without rerunning it during a short presentation:
 
 ```powershell
 python .\deploy_to_fabric.py `
   --capacity-id <fabric-capacity-guid>
 ```
 
-Explain that this single command generates the files, creates or reuses the
-workspace and Lakehouse, uploads the files, deploys the notebook, executes the
-load, and validates the result.
+If demonstrating automation live, run it and narrate the stages shown in the
+terminal.
 
-At completion, review the JSON displayed in the terminal. Confirm:
+**Say**
+
+> One command creates or reuses the workspace and Lakehouse, uploads the
+> source exports to OneLake, deploys the transformation notebook, runs it, and
+> blocks completion unless the migrated data reconciles.
+
+**Verify in the command output**
 
 - `notebook_run.status` is `Completed`.
-- `source_reconciliation.row_counts` matches
-  `fabric_load_report.row_counts`.
-- `order_sales` and `line_sales` are both `12333986.08`.
-- All three orphan counts are zero.
+- Source and Fabric row counts match.
+- Order and line sales are both `12333986.08`.
+- All orphan counts are zero.
 
-### 4. Inspect the Fabric workspace
+### 4. Tour the Fabric workspace - 2 minutes
 
-1. Sign in to the [Microsoft Fabric portal](https://app.fabric.microsoft.com).
-2. Open **Workspaces**.
-3. Select **IBM Netezza Fabric Integration Demo**.
-4. Confirm the workspace contains:
+**Do**
+
+1. Open [Microsoft Fabric](https://app.fabric.microsoft.com).
+2. Select **Workspaces** > **IBM Netezza Fabric Integration Demo**.
+3. Point out:
    - **NetezzaMigrationLakehouse**
+   - **NetezzaMigrationWarehouse**
    - **Load Netezza Synthetic Exports**
-5. Open **NetezzaMigrationLakehouse**.
-6. In the Explorer, expand **Files** and then `netezza_export`.
-7. Confirm that `manifest.json` and the four `.tbl` files are present.
-8. Expand **Tables** and confirm that the four Delta tables are registered.
+   - **OneLake Iceberg Table API Demo**
+4. Open **NetezzaMigrationLakehouse**.
+5. Expand **Files** > `netezza_export`.
+6. Show the manifest and four unchanged source exports.
+7. Expand **Tables** and show the four typed Delta tables.
 
-This demonstrates the Bronze-like retention of source extracts alongside
-analytics-ready Delta tables.
+**Say**
 
-### 5. Walk through the transformation notebook
+> OneLake keeps the original migration evidence and the analytics-ready tables
+> together. The raw exports support audit and replay, while Delta tables serve
+> Fabric workloads.
 
-Open **Load Netezza Synthetic Exports** and explain the important sections:
+### 5. Walk through the transformation notebook - 3 minutes
 
-1. `lakehouse_root` uses an absolute GUID-based OneLake path, allowing the
-   notebook to run without a manually attached default Lakehouse.
-2. `casts` maps Netezza data types to Spark data types.
-3. Each `.tbl` file is read with a header, `|` separator, and `\N` null value.
-4. Each DataFrame overwrites its corresponding Delta table with schema
-   replacement enabled.
-5. The final section compares order and line sales and checks all foreign-key
-   relationships.
-6. The results are persisted to
-   `Files\validation\load_report.json`.
+**Do**
 
-Select **Run all**. The notebook is idempotent, so rerunning it safely replaces
-the demo tables.
+Open **Load Netezza Synthetic Exports** and highlight:
 
-**Expected result:** the run completes successfully and displays one row
-containing the four table counts.
+1. The absolute GUID-based OneLake root.
+2. The Netezza-to-Spark type-cast map.
+3. Pipe-delimited input and `\N` null handling.
+4. Delta overwrite with schema replacement.
+5. Sales reconciliation and orphan checks.
+6. The persisted `Files\validation\load_report.json` report.
 
-### 6. Validate the migration controls
+Select **Run all** if time permits.
 
-In the Lakehouse Explorer, open
-`Files\validation\load_report.json`. Confirm:
+**Say**
+
+> The notebook is deliberately idempotent. Rerunning the migration replaces
+> this batch consistently instead of creating duplicates.
+
+**Expected result:** the run completes and displays all four table counts.
+
+### 6. Prove migration integrity - 2 minutes
+
+**Do**
+
+Open `Files\validation\load_report.json` and show:
 
 ```json
 {
@@ -370,15 +425,19 @@ In the Lakehouse Explorer, open
 }
 ```
 
-Compare this report with the `reconciliation` section in
-`Files\netezza_export\manifest.json`. Explain that production migrations should
-apply the same control pattern to every load batch.
+Compare it with the source manifest.
 
-### 7. Query the migrated data
+**Say**
 
-From the Lakehouse, select **SQL analytics endpoint** and open a new SQL query.
+> A successful Spark job is not sufficient evidence of a successful
+> migration. We separately prove completeness, financial agreement, and
+> relationship integrity.
 
-First, verify the row counts:
+### 7. Show immediate SQL analytics - 3 minutes
+
+**Do**
+
+Open the Lakehouse **SQL analytics endpoint** and run:
 
 ```sql
 SELECT 'customer_dim' AS table_name, COUNT(*) AS row_count
@@ -391,7 +450,7 @@ UNION ALL
 SELECT 'order_line_fact', COUNT(*) FROM dbo.order_line_fact;
 ```
 
-Next, reconcile the two financial totals:
+Reconcile sales:
 
 ```sql
 SELECT
@@ -399,9 +458,9 @@ SELECT
     (SELECT SUM(line_total) FROM dbo.order_line_fact) AS line_sales;
 ```
 
-Both columns should return `12333986.08`.
+Both values should be `12333986.08`.
 
-Finally, show a business insight by industry:
+Show an industry-level insight:
 
 ```sql
 SELECT
@@ -415,54 +474,119 @@ GROUP BY c.industry
 ORDER BY net_sales DESC;
 ```
 
-Explain that the migrated Delta tables are immediately available to SQL,
-Power BI, notebooks, and downstream Fabric workloads without copying the data.
+**Say**
 
-### 8. Demonstrate repeatability
+> The migrated data is immediately available to SQL, Power BI, notebooks, and
+> other Fabric workloads without copying it out of OneLake.
 
-Return to the terminal and run the same deployment command again:
+### 8. Present the OneLake Iceberg Table API notebook - 5 minutes
+
+**Do**
+
+1. Return to the workspace.
+2. Open **OneLake Iceberg Table API Demo**.
+3. Show how the notebook obtains a Fabric-managed Storage token.
+4. Point out the `GET /v1/config` call and the
+   `<workspace-id>/<item-id>` catalog scope.
+5. Show the calls that list namespaces, list tables, and retrieve table
+   metadata.
+6. Highlight `format_version: 2`, the Iceberg schema, metadata location, and
+   table location.
+7. Show that Fabric Spark reads the OneLake locations returned by the catalog.
+8. Select **Run all**.
+9. At the bottom, show the item summary table.
+
+**Expected result**
+
+| Item | Status | Tables |
+|---|---|---:|
+| `NetezzaMigrationLakehouse` | `ready` | 4 |
+| `NetezzaMigrationWarehouse` | `incomplete` until loaded | 0 |
+
+Open
+`Files\validation\iceberg_api_notebook_report.json` and show the Lakehouse
+schemas, three sample rows per table, row counts, and reconciled sales.
+
+**Say**
+
+> OneLake translates Fabric table metadata into an Iceberg REST Catalog
+> interface. An Iceberg-compatible engine can discover governed schemas and
+> locations without a proprietary metadata export. The Warehouse status also
+> demonstrates that the API reflects the actual state of each data item.
+
+### 9. Show external PyIceberg access - optional, 2 minutes
+
+**Do**
+
+From the repository, run the currently ready Lakehouse path:
 
 ```powershell
-python .\deploy_to_fabric.py `
+python .\read_with_iceberg_api.py `
+  --items lakehouse `
+  --require-tables
+```
+
+Open `iceberg-api-report.json` and show:
+
+1. The `dbo` namespace.
+2. Four Iceberg v2 table definitions.
+3. Translated column types.
+4. Three rows read through PyIceberg from each table.
+5. Matching order and line sales.
+
+**Say**
+
+> The previous notebook proved the managed Fabric experience. This command
+> proves that an external open-source Iceberg client can discover and read the
+> same OneLake data.
+
+### 10. Add the Warehouse path - optional extension
+
+After the Warehouse endpoint is ready, run:
+
+```powershell
+python .\deploy_to_warehouse.py `
   --capacity-id <fabric-capacity-guid>
 ```
 
-The script reuses the existing workspace, Lakehouse, and notebook, replaces the
-source files and Delta tables, and runs all reconciliation controls again.
-
-**Demo completion criteria**
-
-- The Fabric notebook run has status `Completed`.
-- All four Fabric row counts match the source manifest.
-- Order sales equal line sales and the source net-sales total.
-- Customer, order, and product orphan counts are zero.
-- The SQL analytics endpoint returns the expected business results.
-
-### 9. Demonstrate open Iceberg interoperability
-
-After the Lakehouse and Warehouse loaders have completed, run:
+Then rerun:
 
 ```powershell
+python .\deploy_table_api_demo.py
 python .\read_with_iceberg_api.py --require-tables
 ```
 
-In the generated `iceberg-api-report.json`, show:
+The presenter should now expect both data items to report `ready`, with four
+tables and the same control totals.
 
-1. Separate catalog scopes for the Lakehouse and Warehouse.
-2. The `dbo` namespace and four discovered tables for each item.
-3. Iceberg format version 2 metadata and translated column types.
-4. Three rows read directly from each table through PyIceberg.
-5. Matching row counts for both Fabric data items.
-6. Matching order and line sales of `$12,333,986.08`.
+**Say**
 
-Explain that OneLake virtualizes the Fabric Delta and Warehouse tables through
-an open Iceberg REST Catalog interface, enabling compatible external engines
-to discover metadata and read the same governed data without exporting another
-copy.
+> Lakehouse and Warehouse can participate in the same open catalog story. The
+> target engine can vary while OneLake remains the common governed data
+> foundation.
 
-In the Fabric workspace, open **OneLake Iceberg Table API Demo** to present the
-same workflow as a managed Fabric notebook. Its final table summarizes whether
-each catalog is `ready` or `incomplete`.
+### 11. Close with the value statement - 1 minute
+
+Summarize the demo with four points:
+
+1. **Lower migration risk:** deterministic files, checksums, and repeatable
+   deployment.
+2. **Control by design:** row counts, financial totals, and orphan checks gate
+   success.
+3. **Immediate business value:** migrated data is queryable through Fabric SQL
+   and ready for Power BI.
+4. **Open interoperability:** OneLake Iceberg Table APIs expose Fabric data to
+   compatible external engines without creating another data copy.
+
+**Demo completion checklist**
+
+- Lakehouse deployment reports `Completed`.
+- Four Lakehouse row counts match the source manifest.
+- Order and line sales both equal `$12,333,986.08`.
+- All orphan counts are zero.
+- SQL analytics returns the expected totals.
+- **OneLake Iceberg Table API Demo** reports the Lakehouse as `ready`.
+- The external PyIceberg script reads all four Lakehouse tables.
 
 ## Replace the simulation with a real Netezza source
 
