@@ -1,0 +1,78 @@
+{
+  "format": "netezza_external_table_export_simulation",
+  "seed": 20260824,
+  "delimiter": "|",
+  "null_value": "\\N",
+  "encoding": "utf-8",
+  "reconciliation": {
+    "as_of_date": "2026-08-23",
+    "row_counts": {
+      "customer_dim": 200,
+      "product_dim": 40,
+      "order_fact": 1500,
+      "order_line_fact": 4440
+    },
+    "order_count": 1500,
+    "customer_count": 200,
+    "gross_sales": "12974389.75",
+    "net_sales": "12333986.08",
+    "discount_amount": "640403.67"
+  },
+  "tables": {
+    "customer_dim": {
+      "file": "customer_dim.tbl",
+      "rows": 200,
+      "sha256": "dbd324bf2cf89f91480765856c85d005164fdadfce2a66d2fec267913dcf4983",
+      "columns": {
+        "customer_id": "BIGINT",
+        "customer_name": "VARCHAR(120)",
+        "industry": "VARCHAR(60)",
+        "country_code": "CHAR(2)",
+        "customer_segment": "VARCHAR(30)",
+        "loyalty_tier": "VARCHAR(20)",
+        "created_date": "DATE"
+      }
+    },
+    "product_dim": {
+      "file": "product_dim.tbl",
+      "rows": 40,
+      "sha256": "938c9198a080c9ca273e9a5a6985af4cfadf7afecf498bd4bce3ee66cb454cae",
+      "columns": {
+        "product_id": "BIGINT",
+        "sku": "VARCHAR(30)",
+        "product_name": "VARCHAR(120)",
+        "category": "VARCHAR(60)",
+        "unit_price": "NUMERIC(12,2)",
+        "active_flag": "BOOLEAN"
+      }
+    },
+    "order_fact": {
+      "file": "order_fact.tbl",
+      "rows": 1500,
+      "sha256": "a1ca434680cea75fb9ba9d364b6827816ac61af9676ec817fbc3ea9929f5aac8",
+      "columns": {
+        "order_id": "BIGINT",
+        "customer_id": "BIGINT",
+        "order_timestamp": "TIMESTAMP",
+        "order_status": "VARCHAR(20)",
+        "sales_channel": "VARCHAR(20)",
+        "currency_code": "CHAR(3)",
+        "order_total": "NUMERIC(14,2)"
+      }
+    },
+    "order_line_fact": {
+      "file": "order_line_fact.tbl",
+      "rows": 4440,
+      "sha256": "466f290d0ad6c9aa116346e380bd931268646401ec1dd3e574bb83075e67b955",
+      "columns": {
+        "order_line_id": "BIGINT",
+        "order_id": "BIGINT",
+        "product_id": "BIGINT",
+        "quantity": "INTEGER",
+        "unit_price": "NUMERIC(12,2)",
+        "discount_pct": "NUMERIC(5,2)",
+        "line_total": "NUMERIC(14,2)"
+      }
+    }
+  }
+}

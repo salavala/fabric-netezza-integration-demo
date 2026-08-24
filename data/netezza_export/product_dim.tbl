@@ -1,0 +1,41 @@
+product_id|sku|product_name|category|unit_price|active_flag
+1|NZ-SKU-0001|Analytics Product 001|Analytics|93.25|True
+2|NZ-SKU-0002|Analytics Product 002|Data Management|111.50|True
+3|NZ-SKU-0003|Analytics Product 003|Risk|129.75|True
+4|NZ-SKU-0004|Analytics Product 004|Fraud|147.00|True
+5|NZ-SKU-0005|Analytics Product 005|Customer Intelligence|165.25|True
+6|NZ-SKU-0006|Analytics Product 006|Analytics|183.50|True
+7|NZ-SKU-0007|Analytics Product 007|Data Management|201.75|True
+8|NZ-SKU-0008|Analytics Product 008|Risk|219.00|True
+9|NZ-SKU-0009|Analytics Product 009|Fraud|237.25|True
+10|NZ-SKU-0010|Analytics Product 010|Customer Intelligence|255.50|True
+11|NZ-SKU-0011|Analytics Product 011|Analytics|273.75|True
+12|NZ-SKU-0012|Analytics Product 012|Data Management|291.00|True
+13|NZ-SKU-0013|Analytics Product 013|Risk|309.25|True
+14|NZ-SKU-0014|Analytics Product 014|Fraud|327.50|True
+15|NZ-SKU-0015|Analytics Product 015|Customer Intelligence|345.75|True
+16|NZ-SKU-0016|Analytics Product 016|Analytics|363.00|True
+17|NZ-SKU-0017|Analytics Product 017|Data Management|381.25|False
+18|NZ-SKU-0018|Analytics Product 018|Risk|399.50|True
+19|NZ-SKU-0019|Analytics Product 019|Fraud|417.75|True
+20|NZ-SKU-0020|Analytics Product 020|Customer Intelligence|435.00|True
+21|NZ-SKU-0021|Analytics Product 021|Analytics|453.25|True
+22|NZ-SKU-0022|Analytics Product 022|Data Management|471.50|True
+23|NZ-SKU-0023|Analytics Product 023|Risk|489.75|True
+24|NZ-SKU-0024|Analytics Product 024|Fraud|507.00|True
+25|NZ-SKU-0025|Analytics Product 025|Customer Intelligence|525.25|True
+26|NZ-SKU-0026|Analytics Product 026|Analytics|543.50|True
+27|NZ-SKU-0027|Analytics Product 027|Data Management|561.75|True
+28|NZ-SKU-0028|Analytics Product 028|Risk|579.00|True
+29|NZ-SKU-0029|Analytics Product 029|Fraud|597.25|True
+30|NZ-SKU-0030|Analytics Product 030|Customer Intelligence|615.50|True
+31|NZ-SKU-0031|Analytics Product 031|Analytics|633.75|True
+32|NZ-SKU-0032|Analytics Product 032|Data Management|651.00|True
+33|NZ-SKU-0033|Analytics Product 033|Risk|669.25|True
+34|NZ-SKU-0034|Analytics Product 034|Fraud|687.50|False
+35|NZ-SKU-0035|Analytics Product 035|Customer Intelligence|705.75|True
+36|NZ-SKU-0036|Analytics Product 036|Analytics|723.00|True
+37|NZ-SKU-0037|Analytics Product 037|Data Management|741.25|True
+38|NZ-SKU-0038|Analytics Product 038|Risk|759.50|True
+39|NZ-SKU-0039|Analytics Product 039|Fraud|777.75|True
+40|NZ-SKU-0040|Analytics Product 040|Customer Intelligence|795.00|True

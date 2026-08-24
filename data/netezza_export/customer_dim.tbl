@@ -1,0 +1,201 @@
+customer_id|customer_name|industry|country_code|customer_segment|loyalty_tier|created_date
+1|Netezza Customer 0001|Banking|DE|Small Business|Standard|2019-01-08
+2|Netezza Customer 0002|Healthcare|AU|Commercial|Standard|2019-01-15
+3|Netezza Customer 0003|Retail|CA|Enterprise|Standard|2019-01-22
+4|Netezza Customer 0004|Manufacturing|FR|Small Business|Standard|2019-01-29
+5|Netezza Customer 0005|Telecommunications|JP|Commercial|Gold|2019-02-05
+6|Netezza Customer 0006|Insurance|GB|Enterprise|Standard|2019-02-12
+7|Netezza Customer 0007|Energy|NL|Small Business|Standard|2019-02-19
+8|Netezza Customer 0008|Transportation|US|Commercial|Standard|2019-02-26
+9|Netezza Customer 0009|Banking|DE|Enterprise|Standard|2019-03-05
+10|Netezza Customer 0010|Healthcare|AU|Small Business|Gold|2019-03-12
+11|Netezza Customer 0011|Retail|CA|Commercial|\\N|2019-03-19
+12|Netezza Customer 0012|Manufacturing|FR|Enterprise|Standard|2019-03-26
+13|Netezza Customer 0013|Telecommunications|JP|Small Business|Standard|2019-04-02
+14|Netezza Customer 0014|Insurance|GB|Commercial|Standard|2019-04-09
+15|Netezza Customer 0015|Energy|NL|Enterprise|Gold|2019-04-16
+16|Netezza Customer 0016|Transportation|US|Small Business|Standard|2019-04-23
+17|Netezza Customer 0017|Banking|DE|Commercial|Standard|2019-04-30
+18|Netezza Customer 0018|Healthcare|AU|Enterprise|Standard|2019-05-07
+19|Netezza Customer 0019|Retail|CA|Small Business|Standard|2019-05-14
+20|Netezza Customer 0020|Manufacturing|FR|Commercial|Gold|2019-05-21
+21|Netezza Customer 0021|Telecommunications|JP|Enterprise|Standard|2019-05-28
+22|Netezza Customer 0022|Insurance|GB|Small Business|\\N|2019-06-04
+23|Netezza Customer 0023|Energy|NL|Commercial|Standard|2019-06-11
+24|Netezza Customer 0024|Transportation|US|Enterprise|Standard|2019-06-18
+25|Netezza Customer 0025|Banking|DE|Small Business|Gold|2019-06-25
+26|Netezza Customer 0026|Healthcare|AU|Commercial|Standard|2019-07-02
+27|Netezza Customer 0027|Retail|CA|Enterprise|Standard|2019-07-09
+28|Netezza Customer 0028|Manufacturing|FR|Small Business|Standard|2019-07-16
+29|Netezza Customer 0029|Telecommunications|JP|Commercial|Standard|2019-07-23
+30|Netezza Customer 0030|Insurance|GB|Enterprise|Gold|2019-07-30
+31|Netezza Customer 0031|Energy|NL|Small Business|Standard|2019-08-06
+32|Netezza Customer 0032|Transportation|US|Commercial|Standard|2019-08-13
+33|Netezza Customer 0033|Banking|DE|Enterprise|\\N|2019-08-20
+34|Netezza Customer 0034|Healthcare|AU|Small Business|Standard|2019-08-27
+35|Netezza Customer 0035|Retail|CA|Commercial|Gold|2019-09-03
+36|Netezza Customer 0036|Manufacturing|FR|Enterprise|Standard|2019-09-10
+37|Netezza Customer 0037|Telecommunications|JP|Small Business|Standard|2019-09-17
+38|Netezza Customer 0038|Insurance|GB|Commercial|Standard|2019-09-24
+39|Netezza Customer 0039|Energy|NL|Enterprise|Standard|2019-10-01
+40|Netezza Customer 0040|Transportation|US|Small Business|Gold|2019-10-08
+41|Netezza Customer 0041|Banking|DE|Commercial|Standard|2019-10-15
+42|Netezza Customer 0042|Healthcare|AU|Enterprise|Standard|2019-10-22
+43|Netezza Customer 0043|Retail|CA|Small Business|Standard|2019-10-29
+44|Netezza Customer 0044|Manufacturing|FR|Commercial|\\N|2019-11-05
+45|Netezza Customer 0045|Telecommunications|JP|Enterprise|Gold|2019-11-12
+46|Netezza Customer 0046|Insurance|GB|Small Business|Standard|2019-11-19
+47|Netezza Customer 0047|Energy|NL|Commercial|Standard|2019-11-26
+48|Netezza Customer 0048|Transportation|US|Enterprise|Standard|2019-12-03
+49|Netezza Customer 0049|Banking|DE|Small Business|Standard|2019-12-10
+50|Netezza Customer 0050|Healthcare|AU|Commercial|Gold|2019-12-17
+51|Netezza Customer 0051|Retail|CA|Enterprise|Standard|2019-12-24
+52|Netezza Customer 0052|Manufacturing|FR|Small Business|Standard|2019-12-31
+53|Netezza Customer 0053|Telecommunications|JP|Commercial|Standard|2020-01-07
+54|Netezza Customer 0054|Insurance|GB|Enterprise|Standard|2020-01-14
+55|Netezza Customer 0055|Energy|NL|Small Business|\\N|2020-01-21
+56|Netezza Customer 0056|Transportation|US|Commercial|Standard|2020-01-28
+57|Netezza Customer 0057|Banking|DE|Enterprise|Standard|2020-02-04
+58|Netezza Customer 0058|Healthcare|AU|Small Business|Standard|2020-02-11
+59|Netezza Customer 0059|Retail|CA|Commercial|Standard|2020-02-18
+60|Netezza Customer 0060|Manufacturing|FR|Enterprise|Gold|2020-02-25
+61|Netezza Customer 0061|Telecommunications|JP|Small Business|Standard|2020-03-03
+62|Netezza Customer 0062|Insurance|GB|Commercial|Standard|2020-03-10
+63|Netezza Customer 0063|Energy|NL|Enterprise|Standard|2020-03-17
+64|Netezza Customer 0064|Transportation|US|Small Business|Standard|2020-03-24
+65|Netezza Customer 0065|Banking|DE|Commercial|Gold|2020-03-31
+66|Netezza Customer 0066|Healthcare|AU|Enterprise|\\N|2020-04-07
+67|Netezza Customer 0067|Retail|CA|Small Business|Standard|2020-04-14
+68|Netezza Customer 0068|Manufacturing|FR|Commercial|Standard|2020-04-21
+69|Netezza Customer 0069|Telecommunications|JP|Enterprise|Standard|2020-04-28
+70|Netezza Customer 0070|Insurance|GB|Small Business|Gold|2020-05-05
+71|Netezza Customer 0071|Energy|NL|Commercial|Standard|2020-05-12
+72|Netezza Customer 0072|Transportation|US|Enterprise|Standard|2020-05-19
+73|Netezza Customer 0073|Banking|DE|Small Business|Standard|2020-05-26
+74|Netezza Customer 0074|Healthcare|AU|Commercial|Standard|2020-06-02
+75|Netezza Customer 0075|Retail|CA|Enterprise|Gold|2020-06-09
+76|Netezza Customer 0076|Manufacturing|FR|Small Business|Standard|2020-06-16
+77|Netezza Customer 0077|Telecommunications|JP|Commercial|\\N|2020-06-23
+78|Netezza Customer 0078|Insurance|GB|Enterprise|Standard|2020-06-30
+79|Netezza Customer 0079|Energy|NL|Small Business|Standard|2020-07-07
+80|Netezza Customer 0080|Transportation|US|Commercial|Gold|2020-07-14
+81|Netezza Customer 0081|Banking|DE|Enterprise|Standard|2020-07-21
+82|Netezza Customer 0082|Healthcare|AU|Small Business|Standard|2020-07-28
+83|Netezza Customer 0083|Retail|CA|Commercial|Standard|2020-08-04
+84|Netezza Customer 0084|Manufacturing|FR|Enterprise|Standard|2020-08-11
+85|Netezza Customer 0085|Telecommunications|JP|Small Business|Gold|2020-08-18
+86|Netezza Customer 0086|Insurance|GB|Commercial|Standard|2020-08-25
+87|Netezza Customer 0087|Energy|NL|Enterprise|Standard|2020-09-01
+88|Netezza Customer 0088|Transportation|US|Small Business|\\N|2020-09-08
+89|Netezza Customer 0089|Banking|DE|Commercial|Standard|2020-09-15
+90|Netezza Customer 0090|Healthcare|AU|Enterprise|Gold|2020-09-22
+91|Netezza Customer 0091|Retail|CA|Small Business|Standard|2020-09-29
+92|Netezza Customer 0092|Manufacturing|FR|Commercial|Standard|2020-10-06
+93|Netezza Customer 0093|Telecommunications|JP|Enterprise|Standard|2020-10-13
+94|Netezza Customer 0094|Insurance|GB|Small Business|Standard|2020-10-20
+95|Netezza Customer 0095|Energy|NL|Commercial|Gold|2020-10-27
+96|Netezza Customer 0096|Transportation|US|Enterprise|Standard|2020-11-03
+97|Netezza Customer 0097|Banking|DE|Small Business|Standard|2020-11-10
+98|Netezza Customer 0098|Healthcare|AU|Commercial|Standard|2020-11-17
+99|Netezza Customer 0099|Retail|CA|Enterprise|\\N|2020-11-24
+100|Netezza Customer 0100|Manufacturing|FR|Small Business|Gold|2020-12-01
+101|Netezza Customer 0101|Telecommunications|JP|Commercial|Standard|2020-12-08
+102|Netezza Customer 0102|Insurance|GB|Enterprise|Standard|2020-12-15
+103|Netezza Customer 0103|Energy|NL|Small Business|Standard|2020-12-22
+104|Netezza Customer 0104|Transportation|US|Commercial|Standard|2020-12-29
+105|Netezza Customer 0105|Banking|DE|Enterprise|Gold|2021-01-05
+106|Netezza Customer 0106|Healthcare|AU|Small Business|Standard|2021-01-12
+107|Netezza Customer 0107|Retail|CA|Commercial|Standard|2021-01-19
+108|Netezza Customer 0108|Manufacturing|FR|Enterprise|Standard|2021-01-26
+109|Netezza Customer 0109|Telecommunications|JP|Small Business|Standard|2021-02-02
+110|Netezza Customer 0110|Insurance|GB|Commercial|\\N|2021-02-09
+111|Netezza Customer 0111|Energy|NL|Enterprise|Standard|2021-02-16
+112|Netezza Customer 0112|Transportation|US|Small Business|Standard|2021-02-23
+113|Netezza Customer 0113|Banking|DE|Commercial|Standard|2021-03-02
+114|Netezza Customer 0114|Healthcare|AU|Enterprise|Standard|2021-03-09
+115|Netezza Customer 0115|Retail|CA|Small Business|Gold|2021-03-16
+116|Netezza Customer 0116|Manufacturing|FR|Commercial|Standard|2021-03-23
+117|Netezza Customer 0117|Telecommunications|JP|Enterprise|Standard|2021-03-30
+118|Netezza Customer 0118|Insurance|GB|Small Business|Standard|2021-04-06
+119|Netezza Customer 0119|Energy|NL|Commercial|Standard|2021-04-13
+120|Netezza Customer 0120|Transportation|US|Enterprise|Gold|2021-04-20
+121|Netezza Customer 0121|Banking|DE|Small Business|\\N|2021-04-27
+122|Netezza Customer 0122|Healthcare|AU|Commercial|Standard|2021-05-04
+123|Netezza Customer 0123|Retail|CA|Enterprise|Standard|2021-05-11
+124|Netezza Customer 0124|Manufacturing|FR|Small Business|Standard|2021-05-18
+125|Netezza Customer 0125|Telecommunications|JP|Commercial|Gold|2021-05-25
+126|Netezza Customer 0126|Insurance|GB|Enterprise|Standard|2021-06-01
+127|Netezza Customer 0127|Energy|NL|Small Business|Standard|2021-06-08
+128|Netezza Customer 0128|Transportation|US|Commercial|Standard|2021-06-15
+129|Netezza Customer 0129|Banking|DE|Enterprise|Standard|2021-06-22
+130|Netezza Customer 0130|Healthcare|AU|Small Business|Gold|2021-06-29
+131|Netezza Customer 0131|Retail|CA|Commercial|Standard|2021-07-06
+132|Netezza Customer 0132|Manufacturing|FR|Enterprise|\\N|2021-07-13
+133|Netezza Customer 0133|Telecommunications|JP|Small Business|Standard|2021-07-20
+134|Netezza Customer 0134|Insurance|GB|Commercial|Standard|2021-07-27
+135|Netezza Customer 0135|Energy|NL|Enterprise|Gold|2021-08-03
+136|Netezza Customer 0136|Transportation|US|Small Business|Standard|2021-08-10
+137|Netezza Customer 0137|Banking|DE|Commercial|Standard|2021-08-17
+138|Netezza Customer 0138|Healthcare|AU|Enterprise|Standard|2021-08-24
+139|Netezza Customer 0139|Retail|CA|Small Business|Standard|2021-08-31
+140|Netezza Customer 0140|Manufacturing|FR|Commercial|Gold|2021-09-07
+141|Netezza Customer 0141|Telecommunications|JP|Enterprise|Standard|2021-09-14
+142|Netezza Customer 0142|Insurance|GB|Small Business|Standard|2021-09-21
+143|Netezza Customer 0143|Energy|NL|Commercial|\\N|2021-09-28
+144|Netezza Customer 0144|Transportation|US|Enterprise|Standard|2021-10-05
+145|Netezza Customer 0145|Banking|DE|Small Business|Gold|2021-10-12
+146|Netezza Customer 0146|Healthcare|AU|Commercial|Standard|2021-10-19
+147|Netezza Customer 0147|Retail|CA|Enterprise|Standard|2021-10-26
+148|Netezza Customer 0148|Manufacturing|FR|Small Business|Standard|2021-11-02
+149|Netezza Customer 0149|Telecommunications|JP|Commercial|Standard|2021-11-09
+150|Netezza Customer 0150|Insurance|GB|Enterprise|Gold|2021-11-16
+151|Netezza Customer 0151|Energy|NL|Small Business|Standard|2021-11-23
+152|Netezza Customer 0152|Transportation|US|Commercial|Standard|2021-11-30
+153|Netezza Customer 0153|Banking|DE|Enterprise|Standard|2021-12-07
+154|Netezza Customer 0154|Healthcare|AU|Small Business|\\N|2021-12-14
+155|Netezza Customer 0155|Retail|CA|Commercial|Gold|2021-12-21
+156|Netezza Customer 0156|Manufacturing|FR|Enterprise|Standard|2021-12-28
+157|Netezza Customer 0157|Telecommunications|JP|Small Business|Standard|2022-01-04
+158|Netezza Customer 0158|Insurance|GB|Commercial|Standard|2022-01-11
+159|Netezza Customer 0159|Energy|NL|Enterprise|Standard|2022-01-18
+160|Netezza Customer 0160|Transportation|US|Small Business|Gold|2022-01-25
+161|Netezza Customer 0161|Banking|DE|Commercial|Standard|2022-02-01
+162|Netezza Customer 0162|Healthcare|AU|Enterprise|Standard|2022-02-08
+163|Netezza Customer 0163|Retail|CA|Small Business|Standard|2022-02-15
+164|Netezza Customer 0164|Manufacturing|FR|Commercial|Standard|2022-02-22
+165|Netezza Customer 0165|Telecommunications|JP|Enterprise|\\N|2022-03-01
+166|Netezza Customer 0166|Insurance|GB|Small Business|Standard|2022-03-08
+167|Netezza Customer 0167|Energy|NL|Commercial|Standard|2022-03-15
+168|Netezza Customer 0168|Transportation|US|Enterprise|Standard|2022-03-22
+169|Netezza Customer 0169|Banking|DE|Small Business|Standard|2022-03-29
+170|Netezza Customer 0170|Healthcare|AU|Commercial|Gold|2022-04-05
+171|Netezza Customer 0171|Retail|CA|Enterprise|Standard|2022-04-12
+172|Netezza Customer 0172|Manufacturing|FR|Small Business|Standard|2022-04-19
+173|Netezza Customer 0173|Telecommunications|JP|Commercial|Standard|2022-04-26
+174|Netezza Customer 0174|Insurance|GB|Enterprise|Standard|2022-05-03
+175|Netezza Customer 0175|Energy|NL|Small Business|Gold|2022-05-10
+176|Netezza Customer 0176|Transportation|US|Commercial|\\N|2022-05-17
+177|Netezza Customer 0177|Banking|DE|Enterprise|Standard|2022-05-24
+178|Netezza Customer 0178|Healthcare|AU|Small Business|Standard|2022-05-31
+179|Netezza Customer 0179|Retail|CA|Commercial|Standard|2022-06-07
+180|Netezza Customer 0180|Manufacturing|FR|Enterprise|Gold|2022-06-14
+181|Netezza Customer 0181|Telecommunications|JP|Small Business|Standard|2022-06-21
+182|Netezza Customer 0182|Insurance|GB|Commercial|Standard|2022-06-28
+183|Netezza Customer 0183|Energy|NL|Enterprise|Standard|2022-07-05
+184|Netezza Customer 0184|Transportation|US|Small Business|Standard|2022-07-12
+185|Netezza Customer 0185|Banking|DE|Commercial|Gold|2022-07-19
+186|Netezza Customer 0186|Healthcare|AU|Enterprise|Standard|2022-07-26
+187|Netezza Customer 0187|Retail|CA|Small Business|\\N|2022-08-02
+188|Netezza Customer 0188|Manufacturing|FR|Commercial|Standard|2022-08-09
+189|Netezza Customer 0189|Telecommunications|JP|Enterprise|Standard|2022-08-16
+190|Netezza Customer 0190|Insurance|GB|Small Business|Gold|2022-08-23
+191|Netezza Customer 0191|Energy|NL|Commercial|Standard|2022-08-30
+192|Netezza Customer 0192|Transportation|US|Enterprise|Standard|2022-09-06
+193|Netezza Customer 0193|Banking|DE|Small Business|Standard|2022-09-13
+194|Netezza Customer 0194|Healthcare|AU|Commercial|Standard|2022-09-20
+195|Netezza Customer 0195|Retail|CA|Enterprise|Gold|2022-09-27
+196|Netezza Customer 0196|Manufacturing|FR|Small Business|Standard|2022-10-04
+197|Netezza Customer 0197|Telecommunications|JP|Commercial|Standard|2022-10-11
+198|Netezza Customer 0198|Insurance|GB|Enterprise|\\N|2022-10-18
+199|Netezza Customer 0199|Energy|NL|Small Business|Standard|2022-10-25
+200|Netezza Customer 0200|Transportation|US|Commercial|Gold|2022-11-01
