@@ -3,4 +3,5 @@ __pycache__/
 .venv/
 .env
 deployment-state.json
-
+warehouse-deployment-state.json
+iceberg-api-report.json
