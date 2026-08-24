@@ -220,6 +220,30 @@ overview](https://learn.microsoft.com/fabric/onelake/table-apis/iceberg-table-ap
 and [getting-started
 guide](https://learn.microsoft.com/fabric/onelake/table-apis/iceberg-table-apis-get-started).
 
+### Deploy the Table API notebook to Fabric
+
+Deploy and run the workspace-native version:
+
+```powershell
+python .\deploy_table_api_demo.py
+```
+
+The command creates or updates **OneLake Iceberg Table API Demo** in the
+existing workspace, runs it, downloads its report, and validates the Lakehouse
+counts and sales. The notebook:
+
+1. Gets a Fabric-managed Azure Storage token.
+2. Calls the OneLake Iceberg REST Catalog endpoints for the Lakehouse and
+   Warehouse.
+3. Uses the returned Iceberg schemas and table locations to read data with
+   Fabric Spark.
+4. Writes
+   `Files\validation\iceberg_api_notebook_report.json` to the Lakehouse.
+
+This approach avoids session-level package installation in automated Fabric
+notebook jobs. The local `read_with_iceberg_api.py` remains the external
+PyIceberg client demonstration.
+
 ## Step-by-step demo execution
 
 Allow approximately 15 minutes for this walkthrough. The deployment command
@@ -436,6 +460,10 @@ an open Iceberg REST Catalog interface, enabling compatible external engines
 to discover metadata and read the same governed data without exporting another
 copy.
 
+In the Fabric workspace, open **OneLake Iceberg Table API Demo** to present the
+same workflow as a managed Fabric notebook. Its final table summarizes whether
+each catalog is `ready` or `incomplete`.
+
 ## Replace the simulation with a real Netezza source
 
 Keep the Lakehouse tables and reconciliation pattern, but replace the local
@@ -461,7 +489,9 @@ for supported connection properties and prerequisites.
 |-- fabric/load_netezza_exports.py
 |-- tests/test_netezza_data.py
 |-- deploy_to_fabric.py           End-to-end deployment and validation
+|-- deploy_table_api_demo.py      Deploys and runs the Iceberg API notebook
 |-- deploy_to_warehouse.py        Native Warehouse load and validation
+|-- fabric/read_with_iceberg_api.py
 |-- generate_netezza_data.py      Deterministic source-data generator
 |-- read_with_iceberg_api.py      OneLake Iceberg discovery and reads
 `-- requirements.txt

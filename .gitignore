@@ -5,3 +5,4 @@ __pycache__/
 deployment-state.json
 warehouse-deployment-state.json
 iceberg-api-report.json
+table-api-deployment-state.json
