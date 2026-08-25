@@ -105,6 +105,7 @@ def query_with_pyiceberg(
             "uri": ICEBERG_BASE_URL,
             "token": token,
             "warehouse": catalog_scope,
+            "py-io-impl": "pyiceberg.io.fsspec.FsspecFileIO",
             "adls.account-name": "onelake",
             "adls.account-host": "onelake.blob.fabric.microsoft.com",
             "adls.credential": credential,

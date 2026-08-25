@@ -1,10 +1,8 @@
 import json
 from typing import Any
-from urllib.parse import quote
 
-import requests
 from notebookutils import mssparkutils
-from pyspark.sql import functions as F
+from pyiceberg.catalog import load_catalog
 
 
 ICEBERG_BASE_URL = "https://onelake.table.fabric.microsoft.com/iceberg"
@@ -20,46 +18,20 @@ EXPECTED_TABLES = {
 }
 
 
-class OneLakeIcebergClient:
-    def __init__(self, workspace_id: str, item_id: str, token: str) -> None:
-        self.catalog_scope = f"{workspace_id}/{item_id}"
-        self.session = requests.Session()
-        self.session.headers.update({"Authorization": f"Bearer {token}"})
-        response = self.session.get(
-            f"{ICEBERG_BASE_URL}/v1/config",
-            params={"warehouse": self.catalog_scope},
-            timeout=60,
-        )
-        response.raise_for_status()
-        self.config = response.json()
-        self.prefix = self.config["overrides"]["prefix"]
-
-    def get(self, path: str) -> dict[str, Any]:
-        response = self.session.get(
-            f"{ICEBERG_BASE_URL}/v1/{self.prefix}/{path}",
-            timeout=60,
-        )
-        response.raise_for_status()
-        return response.json()
-
-    def list_namespaces(self) -> list[str]:
-        payload = self.get("namespaces")
-        return [namespace[0] for namespace in payload.get("namespaces", [])]
-
-    def list_tables(self, namespace: str) -> list[str]:
-        payload = self.get(
-            f"namespaces/{quote(namespace, safe='')}/tables"
-        )
-        return [
-            identifier["name"]
-            for identifier in payload.get("identifiers", [])
-        ]
-
-    def get_table(self, namespace: str, table_name: str) -> dict[str, Any]:
-        return self.get(
-            "namespaces/"
-            f"{quote(namespace, safe='')}/tables/{quote(table_name, safe='')}"
-        )
+def load_onelake_catalog(item_id: str, token: str):
+    catalog_scope = f"{WORKSPACE_ID}/{item_id}"
+    return load_catalog(
+        f"onelake_{item_id.replace('-', '')}",
+        **{
+            "uri": ICEBERG_BASE_URL,
+            "warehouse": catalog_scope,
+            "token": token,
+            "py-io-impl": "pyiceberg.io.fsspec.FsspecFileIO",
+            "adls.account-name": "onelake",
+            "adls.account-host": "onelake.blob.fabric.microsoft.com",
+            "adls.token": token,
+        },
+    )
 
 
 def read_item(
@@ -68,68 +40,57 @@ def read_item(
     item_type: str,
     token: str,
 ) -> dict[str, Any]:
-    rest_catalog = OneLakeIcebergClient(WORKSPACE_ID, item_id, token)
-    namespaces = rest_catalog.list_namespaces()
+    catalog_scope = f"{WORKSPACE_ID}/{item_id}"
+    catalog = load_onelake_catalog(item_id, token)
+    namespaces = [identifier[0] for identifier in catalog.list_namespaces()]
     result: dict[str, Any] = {
         "id": item_id,
         "display_name": item_name,
         "type": item_type,
-        "catalog_scope": rest_catalog.catalog_scope,
+        "catalog_scope": catalog_scope,
         "namespaces": {},
     }
     discovered_tables = set()
 
     for namespace in namespaces:
-        table_names = rest_catalog.list_tables(namespace)
+        table_names = [
+            identifier[-1]
+            for identifier in catalog.list_tables(namespace)
+        ]
         discovered_tables.update(table_names)
         tables = {}
         frames = {}
         for table_name in table_names:
-            metadata = rest_catalog.get_table(namespace, table_name)
-            current_schema_id = metadata["metadata"]["current-schema-id"]
-            current_schema = next(
-                schema
-                for schema in metadata["metadata"]["schemas"]
-                if schema["schema-id"] == current_schema_id
-            )
+            table = catalog.load_table((namespace, table_name))
+            schema = table.schema()
             tables[table_name] = {
-                "metadata_location": metadata["metadata-location"],
-                "table_location": metadata["metadata"]["location"],
-                "format_version": metadata["metadata"]["format-version"],
+                "metadata_location": table.metadata_location,
+                "table_location": table.location(),
+                "format_version": table.metadata.format_version,
                 "columns": [
                     {
-                        "name": field["name"],
-                        "type": str(field["type"]),
-                        "required": field["required"],
+                        "name": field.name,
+                        "type": str(field.field_type),
+                        "required": field.required,
                     }
-                    for field in current_schema["fields"]
+                    for field in schema.fields
                 ],
             }
-            frames[table_name] = (
-                spark.read.format("delta")
-                .load(metadata["metadata"]["location"])
-            )
+            frames[table_name] = table.scan().to_arrow()
 
         query_results: dict[str, Any] = {
             "row_counts": {
-                table_name: frame.count()
+                table_name: len(frame)
                 for table_name, frame in frames.items()
             },
             "sample_rows": {
-                table_name: [
-                    json.loads(row)
-                    for row in frame.limit(3).toJSON().collect()
-                ]
+                table_name: frame.slice(0, 3).to_pylist()
                 for table_name, frame in frames.items()
             },
         }
         if {"order_fact", "order_line_fact"}.issubset(frames):
-            order_sales = frames["order_fact"].select(
-                F.sum("order_total").alias("value")
-            ).first()["value"]
-            line_sales = frames["order_line_fact"].select(
-                F.sum("line_total").alias("value")
-            ).first()["value"]
+            order_sales = sum(frames["order_fact"]["order_total"].to_pylist())
+            line_sales = sum(frames["order_line_fact"]["line_total"].to_pylist())
             query_results["order_sales"] = f"{order_sales:.2f}"
             query_results["line_sales"] = f"{line_sales:.2f}"
 
@@ -143,7 +104,6 @@ def read_item(
     result["status"] = "ready" if not missing_tables else "incomplete"
     return result
 
-storage_token = mssparkutils.credentials.getToken("storage")
 storage_token = mssparkutils.credentials.getToken("storage")
 report = {
     "workspace_id": WORKSPACE_ID,

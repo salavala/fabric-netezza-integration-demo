@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import time
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +16,73 @@ EXPECTED_COUNTS = {
     "order_fact": 1500,
     "order_line_fact": 4440,
 }
+ENVIRONMENT_NAME = "Netezza PyIceberg Environment"
+ENVIRONMENT_YML = """name: netezza-pyiceberg
+dependencies:
+  - pip:
+    - pyiceberg[pyarrow]==0.11.1
+    - adlfs>=2024.12.0
+"""
+
+
+def upsert_environment(
+    client: FabricClient,
+    workspace_id: str,
+    display_name: str,
+) -> dict[str, Any]:
+    environment = client.find_item(workspace_id, display_name, "Environment")
+    if not environment:
+        response = client.fabric.post(
+            f"{FABRIC_API}/workspaces/{workspace_id}/environments",
+            json={
+                "displayName": display_name,
+                "description": (
+                    "Published PyIceberg runtime for the OneLake Table API demo."
+                ),
+            },
+        )
+        client._raise(response)
+        environment = response.json()
+
+    response = client.fabric.post(
+        (
+            f"{FABRIC_API}/workspaces/{workspace_id}/environments/"
+            f"{environment['id']}/staging/libraries/importExternalLibraries"
+        ),
+        data=ENVIRONMENT_YML.encode("utf-8"),
+        headers={"Content-Type": "application/octet-stream"},
+    )
+    client._raise(response)
+    response = client.fabric.post(
+        (
+            f"{FABRIC_API}/workspaces/{workspace_id}/environments/"
+            f"{environment['id']}/staging/publish?beta=false"
+        )
+    )
+    client._poll_operation(response, timeout_seconds=1800)
+
+    deadline = time.monotonic() + 1800
+    while time.monotonic() < deadline:
+        response = client.fabric.get(
+            (
+                f"{FABRIC_API}/workspaces/{workspace_id}/environments/"
+                f"{environment['id']}"
+            )
+        )
+        client._raise(response)
+        environment = response.json()
+        state = environment.get("properties", {}).get(
+            "publishDetails", {}
+        ).get("state")
+        if state == "Success":
+            return environment
+        if state in {"Failed", "Cancelled"}:
+            raise RuntimeError(
+                "Fabric Environment publish failed: "
+                f"{json.dumps(environment, indent=2)}"
+            )
+        time.sleep(20)
+    raise TimeoutError("Fabric Environment publish did not complete.")
 
 
 def notebook_definition(
@@ -22,6 +90,7 @@ def notebook_definition(
     workspace_id: str,
     lakehouse_id: str,
     warehouse_id: str,
+    environment_id: str,
 ) -> dict[str, Any]:
     lakehouse_root = (
         f"abfss://{workspace_id}@onelake.dfs.fabric.microsoft.com/{lakehouse_id}"
@@ -55,6 +124,12 @@ def notebook_definition(
                 "display_name": "Synapse PySpark",
                 "language": "Python",
             },
+            "dependencies": {
+                "environment": {
+                    "environmentId": environment_id,
+                    "workspaceId": workspace_id,
+                }
+            },
         },
     }
     return {
@@ -85,6 +160,7 @@ def main() -> None:
         "--notebook-name",
         default="OneLake Iceberg Table API Demo",
     )
+    parser.add_argument("--environment-name", default=ENVIRONMENT_NAME)
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent
@@ -115,6 +191,11 @@ def main() -> None:
     if not warehouse:
         raise RuntimeError(f"Warehouse {args.warehouse_name!r} was not found.")
 
+    environment = upsert_environment(
+        client,
+        workspace["id"],
+        args.environment_name,
+    )
     notebook = client.upsert_notebook(
         workspace["id"],
         args.notebook_name,
@@ -123,6 +204,7 @@ def main() -> None:
             workspace["id"],
             lakehouse["id"],
             warehouse["id"],
+            environment["id"],
         ),
     )
     response = client.fabric.patch(
@@ -132,8 +214,8 @@ def main() -> None:
         ),
         json={
             "description": (
-                "Discovers Lakehouse and Warehouse tables through the OneLake "
-                "Iceberg REST Catalog API and reads their OneLake data."
+                "Uses PyIceberg with the OneLake Iceberg REST Catalog API to "
+                "discover and read Lakehouse and Warehouse tables."
             )
         },
     )
@@ -162,6 +244,7 @@ def main() -> None:
         "workspace": workspace,
         "lakehouse": lakehouse,
         "warehouse": warehouse,
+        "environment": environment,
         "notebook": notebook,
         "notebook_run": run,
         "table_api_report": report,

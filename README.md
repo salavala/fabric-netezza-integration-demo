@@ -232,17 +232,18 @@ The command creates or updates **OneLake Iceberg Table API Demo** in the
 existing workspace, runs it, downloads its report, and validates the Lakehouse
 counts and sales. The notebook:
 
-1. Gets a Fabric-managed Azure Storage token.
-2. Calls the OneLake Iceberg REST Catalog endpoints for the Lakehouse and
-   Warehouse.
-3. Uses the returned Iceberg schemas and table locations to read data with
-   Fabric Spark.
-4. Writes
+1. Creates or reuses **Netezza PyIceberg Environment**.
+2. Publishes PyIceberg 0.11.1 and PyArrow in that Fabric Environment, then
+   attaches it to the notebook.
+3. Gets a Fabric-managed Azure Storage token.
+4. Uses PyIceberg with the OneLake Iceberg REST Catalog to discover schemas and
+   read Lakehouse and Warehouse table rows as Arrow data.
+5. Writes
    `Files\validation\iceberg_api_notebook_report.json` to the Lakehouse.
 
-This approach avoids session-level package installation in automated Fabric
-notebook jobs. The local `read_with_iceberg_api.py` remains the external
-PyIceberg client demonstration.
+The published Environment avoids unreliable session-level package installation
+in automated Fabric notebook jobs. The local `read_with_iceberg_api.py`
+provides the equivalent external PyIceberg client demonstration.
 
 ## Presenter-ready step-by-step demo execution
 
