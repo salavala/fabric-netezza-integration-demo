@@ -114,14 +114,15 @@ report = {
             "Lakehouse",
             storage_token,
         ),
-        "warehouse": read_item(
-            "NetezzaMigrationWarehouse",
-            WAREHOUSE_ID,
-            "Warehouse",
-            storage_token,
-        ),
     },
 }
+if WAREHOUSE_ID:
+    report["items"]["warehouse"] = read_item(
+        "NetezzaMigrationWarehouse",
+        WAREHOUSE_ID,
+        "Warehouse",
+        storage_token,
+    )
 
 lakehouse_results = report["items"]["lakehouse"]["namespaces"]["dbo"][
     "query_results"

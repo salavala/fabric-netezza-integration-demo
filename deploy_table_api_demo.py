@@ -89,7 +89,7 @@ def notebook_definition(
     source_path: Path,
     workspace_id: str,
     lakehouse_id: str,
-    warehouse_id: str,
+    warehouse_id: str | None,
     environment_id: str,
 ) -> dict[str, Any]:
     lakehouse_root = (
@@ -98,7 +98,7 @@ def notebook_definition(
     replacements = {
         "__WORKSPACE_ID__": workspace_id,
         "__LAKEHOUSE_ID__": lakehouse_id,
-        "__WAREHOUSE_ID__": warehouse_id,
+        "__WAREHOUSE_ID__": warehouse_id or "",
         "__LAKEHOUSE_ROOT__": lakehouse_root,
     }
     source = source_path.read_text(encoding="utf-8")
@@ -154,6 +154,10 @@ def main() -> None:
         "--workspace-name",
         default="IBM Netezza Fabric Integration Demo",
     )
+    parser.add_argument(
+        "--workspace-id",
+        help="Exact Fabric workspace GUID; takes precedence over --workspace-name.",
+    )
     parser.add_argument("--lakehouse-name", default="NetezzaMigrationLakehouse")
     parser.add_argument("--warehouse-name", default="NetezzaMigrationWarehouse")
     parser.add_argument(
@@ -165,17 +169,20 @@ def main() -> None:
 
     root = Path(__file__).resolve().parent
     client = FabricClient()
-    workspaces = [
-        workspace
-        for workspace in client.list_workspaces()
-        if workspace["displayName"].casefold() == args.workspace_name.casefold()
-    ]
-    if len(workspaces) != 1:
-        raise RuntimeError(
-            f"Expected one workspace named {args.workspace_name!r}; "
-            f"found {len(workspaces)}."
-        )
-    workspace = workspaces[0]
+    if args.workspace_id:
+        workspace = client.get_workspace(args.workspace_id)
+    else:
+        workspaces = [
+            workspace
+            for workspace in client.list_workspaces()
+            if workspace["displayName"].casefold() == args.workspace_name.casefold()
+        ]
+        if len(workspaces) != 1:
+            raise RuntimeError(
+                f"Expected one workspace named {args.workspace_name!r}; "
+                f"found {len(workspaces)}."
+            )
+        workspace = workspaces[0]
     lakehouse = client.find_item(
         workspace["id"],
         args.lakehouse_name,
@@ -188,8 +195,6 @@ def main() -> None:
     )
     if not lakehouse:
         raise RuntimeError(f"Lakehouse {args.lakehouse_name!r} was not found.")
-    if not warehouse:
-        raise RuntimeError(f"Warehouse {args.warehouse_name!r} was not found.")
 
     environment = upsert_environment(
         client,
@@ -203,7 +208,7 @@ def main() -> None:
             root / "fabric" / "read_with_iceberg_api.py",
             workspace["id"],
             lakehouse["id"],
-            warehouse["id"],
+            warehouse["id"] if warehouse else None,
             environment["id"],
         ),
     )

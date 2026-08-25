@@ -109,21 +109,23 @@ class FabricClient:
         if len(matches) > 1:
             raise RuntimeError(f"Multiple workspaces are named {display_name!r}.")
         if matches:
-            workspace = matches[0]
-        else:
-            response = self.fabric.post(
-                f"{FABRIC_API}/workspaces",
-                json={
-                    "displayName": display_name,
-                    "description": (
-                        "Self-contained IBM Netezza export modernization demo for "
-                        "Microsoft Fabric Lakehouse."
-                    ),
-                    "capacityId": capacity_id,
-                },
+            raise RuntimeError(
+                f"Workspace {display_name!r} already exists. "
+                "Choose a unique name so this deployment can create a new workspace."
             )
-            self._raise(response)
-            workspace = response.json()
+        response = self.fabric.post(
+            f"{FABRIC_API}/workspaces",
+            json={
+                "displayName": display_name,
+                "description": (
+                    "Self-contained IBM Netezza export modernization demo for "
+                    "Microsoft Fabric Lakehouse."
+                ),
+                "capacityId": capacity_id,
+            },
+        )
+        self._raise(response)
+        workspace = response.json()
 
         deadline = time.monotonic() + 600
         while time.monotonic() < deadline:
@@ -133,11 +135,20 @@ class FabricClient:
             if workspace.get("capacityAssignmentProgress") == "Completed":
                 break
             time.sleep(10)
+        else:
+            raise TimeoutError(
+                f"Capacity assignment timed out for workspace {workspace['id']}."
+            )
         if workspace.get("capacityId") != capacity_id:
             raise RuntimeError(
                 f"Workspace is assigned to {workspace.get('capacityId')}, not {capacity_id}."
             )
         return workspace
+
+    def get_workspace(self, workspace_id: str) -> dict[str, Any]:
+        response = self.fabric.get(f"{FABRIC_API}/workspaces/{workspace_id}")
+        self._raise(response)
+        return response.json()
 
     def list_items(self, workspace_id: str, item_type: str) -> list[dict[str, Any]]:
         response = self.fabric.get(

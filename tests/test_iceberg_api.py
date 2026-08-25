@@ -42,6 +42,21 @@ class IcebergApiTests(unittest.TestCase):
         self.assertIn("table.scan().to_arrow()", source)
         self.assertNotIn('spark.read.format("delta")', source)
 
+    def test_fabric_notebook_allows_lakehouse_without_warehouse(self) -> None:
+        definition = notebook_definition(
+            ROOT / "fabric" / "read_with_iceberg_api.py",
+            "11111111-1111-1111-1111-111111111111",
+            "22222222-2222-2222-2222-222222222222",
+            None,
+            "44444444-4444-4444-4444-444444444444",
+        )
+        notebook = json.loads(
+            base64.b64decode(definition["parts"][0]["payload"]).decode("utf-8")
+        )
+        source = "".join(notebook["cells"][0]["source"])
+        self.assertIn('WAREHOUSE_ID = ""', source)
+        self.assertIn("if WAREHOUSE_ID:", source)
+
 
 if __name__ == "__main__":
     unittest.main()

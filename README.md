@@ -7,7 +7,7 @@ required.
 The Lakehouse deployment command:
 
 1. Generates pipe-delimited Netezza-style export files.
-2. Creates or reuses a Fabric workspace on a specified capacity.
+2. Creates a new Fabric workspace on a specified capacity.
 3. Creates or reuses a Lakehouse.
 4. Uploads the exports and their manifest to OneLake.
 5. Deploys and runs a PySpark notebook.
@@ -133,13 +133,46 @@ python .\deploy_to_fabric.py `
   --notebook-name "Load Netezza Synthetic Exports"
 ```
 
-The command is idempotent for those names. It uses absolute GUID-based OneLake
-paths, so the notebook does not depend on an attached default Lakehouse.
-Deployment output is saved locally to the ignored `deployment-state.json`.
+The workspace name must not already exist. Each run creates a fresh workspace
+and fails before deployment if that name is already in use. The command uses
+absolute GUID-based OneLake paths, so the notebook does not depend on an
+attached default Lakehouse. Deployment output is saved locally to the ignored
+`deployment-state.json`.
+
+### Deploy from GitHub
+
+[![Deploy to Microsoft Fabric](https://img.shields.io/badge/Deploy%20to-Microsoft%20Fabric-742774?logo=microsoft)](https://github.com/salavala/fabric-netezza-integration-demo/actions/workflows/deploy-fabric.yml)
+
+Use the
+[Deploy to Microsoft Fabric workflow](https://github.com/salavala/fabric-netezza-integration-demo/actions/workflows/deploy-fabric.yml),
+select **Run workflow**, and enter the Fabric capacity GUID, a unique new
+workspace name, and the desired item names. The workflow creates the workspace,
+deploys the Lakehouse demo, and can deploy the PyIceberg Table API notebook.
+The Table API demo reads the Lakehouse immediately; it also reads the named
+Warehouse when that optional item exists in the new workspace.
+
+Fabric login credentials are intentionally not accepted as visible workflow
+inputs. Add an Actions environment named `fabric`, create an environment secret
+named `AZURE_CREDENTIALS`, and store this service-principal JSON:
+
+```json
+{
+  "clientId": "<application-client-id>",
+  "clientSecret": "<client-secret>",
+  "subscriptionId": "<azure-subscription-id>",
+  "tenantId": "<microsoft-entra-tenant-id>"
+}
+```
+
+Configure the Fabric tenant to allow service principals to use Fabric APIs.
+Grant the service principal permission to create workspaces and assign the
+selected capacity. The identity also needs write access to OneLake. Never place
+the client secret in workflow inputs, repository files, commit history, or
+logs.
 
 ## Native Fabric Warehouse deployment
 
-The second deployment script creates or reuses
+The second deployment script creates a new workspace and then creates
 **NetezzaMigrationWarehouse**, connects to its Fabric SQL endpoint with the
 signed-in Azure CLI identity, creates typed SQL tables, loads all four exports,
 and runs the same reconciliation controls:
