@@ -184,6 +184,32 @@ To create the `fabric` environment and securely set or replace its
 The script prompts for the client secret without displaying it and sends the
 credential JSON directly to GitHub. It does not save credentials to a file.
 
+For a new customer environment without an existing deployment application, use
+the all-in-one bootstrap script from PowerShell:
+
+```powershell
+.\scripts\setup-customer-fabric-deployment.ps1 `
+  -Repository "<customer-github-name>/fabric-netezza-integration-demo"
+```
+
+The script opens an interactive Azure login, discovers the active subscription
+and tenant IDs, creates a Microsoft Entra application and service principal,
+creates a one-year client secret, grants subscription Reader access, creates
+the GitHub `fabric` environment, and stores `AZURE_CREDENTIALS` there. If the
+customer has multiple subscriptions, specify the deployment subscription:
+
+```powershell
+.\scripts\setup-customer-fabric-deployment.ps1 `
+  -Repository "<customer-github-name>/fabric-netezza-integration-demo" `
+  -SubscriptionId "<azure-subscription-id>"
+```
+
+The customer running the script needs permission to create Entra applications,
+assign the subscription Reader role, administer the GitHub fork, and configure
+Fabric. After the script completes, a Fabric administrator must allow service
+principals to use Fabric APIs and grant the displayed Client ID access to the
+target Fabric capacity. No credential file is created or committed.
+
 ## Native Fabric Warehouse deployment
 
 The second deployment script creates a new workspace and then creates
