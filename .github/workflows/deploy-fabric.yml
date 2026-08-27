@@ -56,6 +56,16 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      - name: Validate Azure credentials secret
+        shell: bash
+        env:
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        run: |
+          if [ -z "$AZURE_CREDENTIALS" ]; then
+            echo "::error::The AZURE_CREDENTIALS secret is missing or empty in the 'fabric' environment. Configure it with scripts/set-github-azure-credentials.ps1 (see README.md), then re-run this workflow." >&2
+            exit 1
+          fi
+
       - name: Sign in to Azure and Fabric
         uses: azure/login@v2
         with:
