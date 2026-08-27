@@ -145,11 +145,12 @@ attached default Lakehouse. Deployment output is saved locally to the ignored
 
 Use the
 [Deploy to Microsoft Fabric workflow](https://github.com/salavala/fabric-netezza-integration-demo/actions/workflows/deploy-fabric.yml),
-select **Run workflow**, and enter the Fabric capacity GUID, a unique new
-workspace name, and the desired item names. The workflow creates the workspace,
-deploys the Lakehouse demo, and can deploy the PyIceberg Table API notebook.
-The Table API demo reads the Lakehouse immediately; it also reads the named
-Warehouse when that optional item exists in the new workspace.
+in **GitHub Actions** (not the Fabric portal), select **Run workflow**, and enter
+the Fabric capacity GUID, a unique new workspace name, and the desired item
+names. The workflow creates the workspace, deploys the Lakehouse demo, and can
+deploy the PyIceberg Table API notebook. The Table API demo reads the Lakehouse
+immediately; it also reads the named Warehouse when that optional item exists
+in the new workspace.
 
 Fabric login credentials are intentionally not accepted as visible workflow
 inputs. Add an Actions environment named `fabric`, create an environment secret
@@ -169,6 +170,19 @@ Grant the service principal permission to create workspaces and assign the
 selected capacity. The identity also needs write access to OneLake. Never place
 the client secret in workflow inputs, repository files, commit history, or
 logs.
+
+To create the `fabric` environment and securely set or replace its
+`AZURE_CREDENTIALS` secret, run:
+
+```powershell
+.\scripts\set-github-azure-credentials.ps1 `
+  -ClientId <application-client-id> `
+  -SubscriptionId <azure-subscription-id> `
+  -TenantId <microsoft-entra-tenant-id>
+```
+
+The script prompts for the client secret without displaying it and sends the
+credential JSON directly to GitHub. It does not save credentials to a file.
 
 ## Native Fabric Warehouse deployment
 
