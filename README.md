@@ -189,7 +189,8 @@ the all-in-one bootstrap script from PowerShell:
 
 ```powershell
 .\scripts\setup-customer-fabric-deployment.ps1 `
-  -Repository "<customer-github-name>/fabric-netezza-integration-demo"
+  -Repository "<customer-github-name>/fabric-netezza-integration-demo" `
+  -TenantId "<fabric-tenant-id>"
 ```
 
 The script opens an interactive Azure login, discovers the active subscription
@@ -201,8 +202,14 @@ customer has multiple subscriptions, specify the deployment subscription:
 ```powershell
 .\scripts\setup-customer-fabric-deployment.ps1 `
   -Repository "<customer-github-name>/fabric-netezza-integration-demo" `
-  -SubscriptionId "<azure-subscription-id>"
+  -SubscriptionId "<azure-subscription-id>" `
+  -TenantId "<fabric-tenant-id>"
 ```
+
+The GitHub account and Azure/Fabric account do not need to use the same email.
+`gh auth login` must use an account that administers the GitHub fork, while the
+device-code prompt must use an account in the Fabric tenant with the required
+Azure and Entra permissions.
 
 The customer running the script needs permission to create Entra applications,
 assign the subscription Reader role, administer the GitHub fork, and configure

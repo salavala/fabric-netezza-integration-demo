@@ -18,6 +18,10 @@ Display name for the new Microsoft Entra app registration.
 Optional subscription to select after login. The active subscription is used
 when this parameter is omitted.
 
+.PARAMETER TenantId
+Optional Fabric tenant ID. When provided, Azure device-code login is restricted
+to this tenant so a different default Azure account is not selected.
+
 .PARAMETER Environment
 GitHub Actions environment that receives the secret. Defaults to fabric.
 #>
@@ -33,10 +37,14 @@ param(
     [ValidatePattern('^[0-9a-fA-F-]{36}$')]
     [string] $SubscriptionId,
 
+    [ValidatePattern('^[0-9a-fA-F-]{36}$')]
+    [string] $TenantId,
+
     [string] $Environment = 'fabric'
 )
 
 $ErrorActionPreference = 'Stop'
+$requestedTenantId = $TenantId
 
 foreach ($command in 'az', 'gh') {
     if (-not (Get-Command $command -ErrorAction SilentlyContinue)) {
@@ -44,7 +52,12 @@ foreach ($command in 'az', 'gh') {
     }
 }
 
-az login --output none
+$loginArguments = @('login', '--use-device-code', '--output', 'none')
+if ($requestedTenantId) {
+    $loginArguments += @('--tenant', $requestedTenantId)
+}
+
+az @loginArguments
 if ($LASTEXITCODE -ne 0) {
     throw 'Azure login failed.'
 }
@@ -62,7 +75,14 @@ if ($LASTEXITCODE -ne 0 -or -not $account.id -or -not $account.tenantId) {
 }
 
 $SubscriptionId = $account.id
-$tenantId = $account.tenantId
+$activeTenantId = $account.tenantId
+
+if ($requestedTenantId -and $activeTenantId -ne $requestedTenantId) {
+    throw (
+        "Azure login returned tenant '$activeTenantId', " +
+        "not requested tenant '$requestedTenantId'."
+    )
+}
 
 # GitHub authentication is separate from the interactive Azure authentication.
 gh auth status | Out-Null
@@ -117,7 +137,7 @@ try {
         clientId       = $app.appId
         clientSecret   = $credential.password
         subscriptionId = $SubscriptionId
-        tenantId       = $tenantId
+        tenantId       = $activeTenantId
     } | ConvertTo-Json -Compress
 
     gh api `
@@ -144,7 +164,7 @@ finally {
 Write-Host 'Customer deployment identity configured successfully.'
 Write-Host "Repository:      $Repository"
 Write-Host "Subscription ID: $SubscriptionId"
-Write-Host "Tenant ID:       $tenantId"
+Write-Host "Tenant ID:       $activeTenantId"
 Write-Host "Client ID:       $($app.appId)"
 Write-Host ''
 Write-Host (
