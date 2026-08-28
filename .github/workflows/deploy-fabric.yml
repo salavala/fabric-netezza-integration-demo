@@ -22,6 +22,10 @@ on:
         required: true
         default: Load Netezza Synthetic Exports
         type: string
+      workspace_admin_object_id:
+        description: Optional Entra user object ID to add as workspace Admin
+        required: false
+        type: string
       deploy_table_api:
         description: Deploy and run the PyIceberg Table API demo
         required: true
@@ -75,6 +79,16 @@ jobs:
             --workspace-name "${{ inputs.workspace_name }}" \
             --lakehouse-name "${{ inputs.lakehouse_name }}" \
             --notebook-name "${{ inputs.loader_notebook_name }}"
+
+      - name: Grant workspace administrator access
+        if: ${{ inputs.workspace_admin_object_id != '' }}
+        shell: bash
+        run: |
+          python grant_workspace_access.py \
+            --workspace-id "$(python -c 'import json; print(json.load(open("deployment-state.json"))["workspace"]["id"])')" \
+            --principal-id "${{ inputs.workspace_admin_object_id }}" \
+            --principal-type User \
+            --role Admin
 
       - name: Deploy PyIceberg Table API demo
         if: ${{ inputs.deploy_table_api }}

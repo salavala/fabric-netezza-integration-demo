@@ -152,6 +152,10 @@ deploy the PyIceberg Table API notebook. The Table API demo reads the Lakehouse
 immediately; it also reads the named Warehouse when that optional item exists
 in the new workspace.
 
+Set `workspace_admin_object_id` to the Microsoft Entra object ID of the customer
+user who should see and administer the newly created workspace. Capacity
+administrator access alone does not grant access to individual workspaces.
+
 Fabric login credentials are intentionally not accepted as visible workflow
 inputs. Add an Actions environment named `fabric`, create an environment secret
 named `AZURE_CREDENTIALS`, and store this service-principal JSON:
