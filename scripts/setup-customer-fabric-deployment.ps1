@@ -1,3 +1,27 @@
+<#
+.SYNOPSIS
+Bootstraps a customer's identity and GitHub secret for Fabric deployment.
+
+.DESCRIPTION
+Signs into Azure interactively, discovers the active tenant and subscription,
+creates a Microsoft Entra app and service principal, grants subscription Reader,
+and stores its generated credential in a GitHub Actions environment. The
+credential is sent directly to GitHub and is not written to disk.
+
+.PARAMETER Repository
+Customer fork in GitHub owner/name format.
+
+.PARAMETER ApplicationName
+Display name for the new Microsoft Entra app registration.
+
+.PARAMETER SubscriptionId
+Optional subscription to select after login. The active subscription is used
+when this parameter is omitted.
+
+.PARAMETER Environment
+GitHub Actions environment that receives the secret. Defaults to fabric.
+#>
+
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
@@ -40,6 +64,7 @@ if ($LASTEXITCODE -ne 0 -or -not $account.id -or -not $account.tenantId) {
 $SubscriptionId = $account.id
 $tenantId = $account.tenantId
 
+# GitHub authentication is separate from the interactive Azure authentication.
 gh auth status | Out-Null
 if ($LASTEXITCODE -ne 0) {
     throw 'GitHub login is required. Run: gh auth login'
@@ -76,6 +101,8 @@ if ($LASTEXITCODE -ne 0 -or -not $credential.password) {
 }
 
 try {
+    # Azure RBAC makes the subscription visible to azure/login. Fabric capacity
+    # access remains a separate assignment performed by a Fabric administrator.
     az role assignment create `
         --assignee-object-id $servicePrincipal.id `
         --assignee-principal-type ServicePrincipal `
@@ -109,6 +136,7 @@ try {
     }
 }
 finally {
+    # Avoid retaining the generated password in PowerShell variables.
     Remove-Variable credentials -ErrorAction SilentlyContinue
     Remove-Variable credential -ErrorAction SilentlyContinue
 }

@@ -1,3 +1,10 @@
+"""Inspect Fabric Lakehouse and Warehouse tables through OneLake Iceberg APIs.
+
+Run this external client after Azure CLI login. It demonstrates both direct
+Iceberg REST metadata discovery and PyIceberg Arrow scans, then writes a local
+JSON report containing catalog details and reconciliation results.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -25,6 +32,8 @@ IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
 class OneLakeIcebergClient:
+    """Small read-only client for OneLake's Iceberg REST catalog endpoints."""
+
     def __init__(self, workspace_id: str, item_id: str) -> None:
         self.warehouse = f"{workspace_id}/{item_id}"
         self.session = requests.Session()
@@ -86,6 +95,8 @@ class OneLakeIcebergClient:
 
 
 def _validate_identifier(value: str) -> None:
+    """Reject catalog identifiers that are unsafe to pass to query helpers."""
+
     if not IDENTIFIER.fullmatch(value):
         raise ValueError(f"Unsafe identifier returned by catalog: {value!r}")
 

@@ -1,3 +1,28 @@
+<#
+.SYNOPSIS
+Stores an existing Microsoft Entra application's credentials in GitHub.
+
+.DESCRIPTION
+Creates or updates the requested GitHub Actions environment and writes the
+service-principal JSON as the encrypted AZURE_CREDENTIALS environment secret.
+The client secret is entered securely and is never saved to a local file.
+
+.PARAMETER ClientId
+Application (client) ID of the existing Microsoft Entra app registration.
+
+.PARAMETER SubscriptionId
+Azure subscription containing the target Fabric capacity.
+
+.PARAMETER TenantId
+Microsoft Entra tenant containing the app registration.
+
+.PARAMETER Repository
+GitHub repository in owner/name format. Defaults to this demo repository.
+
+.PARAMETER Environment
+GitHub Actions environment that receives the secret. Defaults to fabric.
+#>
+
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
@@ -31,6 +56,7 @@ if ($LASTEXITCODE -ne 0) {
 $clientSecret = Read-Host 'Microsoft Entra client secret' -AsSecureString
 $secretPointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($clientSecret)
 
+# Convert the secret only while constructing the payload expected by azure/login.
 try {
     $credentials = @{
         clientId       = $ClientId
@@ -57,6 +83,7 @@ try {
     }
 }
 finally {
+    # Clear unmanaged and PowerShell references even when a GitHub command fails.
     if ($secretPointer -ne [IntPtr]::Zero) {
         [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($secretPointer)
     }

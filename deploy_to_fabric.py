@@ -1,3 +1,10 @@
+"""Deploy and validate the Netezza migration demo in a new Fabric workspace.
+
+This command creates the workspace and Lakehouse, uploads generated exports to
+OneLake, deploys and runs the loader notebook, and verifies the resulting Delta
+tables against the source reconciliation manifest.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -43,6 +50,8 @@ def azure_token(resource: str) -> str:
 
 
 class FabricClient:
+    """Minimal Fabric REST and OneLake DFS client using Azure CLI credentials."""
+
     def __init__(self) -> None:
         self.fabric = requests.Session()
         self.fabric.headers.update(
@@ -73,6 +82,8 @@ class FabricClient:
         )
 
     def _poll_operation(self, response: requests.Response, timeout_seconds: int = 900) -> None:
+        """Wait for a Fabric long-running operation accepted with HTTP 202."""
+
         if response.status_code != 202:
             self._raise(response)
             return
@@ -101,6 +112,8 @@ class FabricClient:
         display_name: str,
         capacity_id: str,
     ) -> dict[str, Any]:
+        """Create a new capacity-backed workspace with a unique display name."""
+
         matches = [
             workspace
             for workspace in self.list_workspaces()

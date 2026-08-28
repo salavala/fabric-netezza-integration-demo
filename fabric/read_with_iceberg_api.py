@@ -1,3 +1,10 @@
+"""Fabric notebook that reads OneLake tables with PyIceberg and Arrow.
+
+Deployment replaces the workspace and item placeholders and attaches a Fabric
+Environment containing PyIceberg and adlfs. The notebook authenticates with a
+Fabric-managed storage token and persists a validation report in the Lakehouse.
+"""
+
 import json
 from typing import Any
 
@@ -19,6 +26,8 @@ EXPECTED_TABLES = {
 
 
 def load_onelake_catalog(item_id: str, token: str):
+    """Create a PyIceberg catalog scoped to one Fabric item."""
+
     catalog_scope = f"{WORKSPACE_ID}/{item_id}"
     return load_catalog(
         f"onelake_{item_id.replace('-', '')}",
@@ -40,6 +49,8 @@ def read_item(
     item_type: str,
     token: str,
 ) -> dict[str, Any]:
+    """Discover an item's schemas and read every table into an Arrow frame."""
+
     catalog_scope = f"{WORKSPACE_ID}/{item_id}"
     catalog = load_onelake_catalog(item_id, token)
     namespaces = [identifier[0] for identifier in catalog.list_namespaces()]

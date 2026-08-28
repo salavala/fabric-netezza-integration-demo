@@ -1,3 +1,10 @@
+"""Load the synthetic Netezza exports into a native Microsoft Fabric Warehouse.
+
+The script creates a new workspace and Warehouse, authenticates to its SQL
+endpoint with the Azure CLI identity, creates typed tables, loads the exports,
+and applies the same reconciliation checks as the Lakehouse path.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -18,6 +25,8 @@ from generate_netezza_data import NULL_VALUE, TABLE_FIELDS, write_dataset
 
 SQL_COPT_SS_ACCESS_TOKEN = 1256
 
+# Fabric Warehouse DDL mirrors the Netezza source types while using supported
+# T-SQL equivalents.
 TABLE_DDL = {
     "customer_dim": """
         CREATE TABLE dbo.customer_dim (

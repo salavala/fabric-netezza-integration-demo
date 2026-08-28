@@ -1,3 +1,5 @@
+"""Tests for deterministic export generation and source reconciliation."""
+
 from __future__ import annotations
 
 import json

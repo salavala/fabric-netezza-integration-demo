@@ -1,3 +1,5 @@
+"""Tests for workspace creation safeguards in the Fabric deployment client."""
+
 from __future__ import annotations
 
 import sys

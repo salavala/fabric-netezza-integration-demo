@@ -1,3 +1,10 @@
+"""Generate deterministic Netezza-style sales exports and reconciliation data.
+
+The generated pipe-delimited files emulate an appliance export without requiring
+access to a live Netezza system. A manifest records schemas, checksums, row
+counts, and financial totals used by the Fabric deployment validation.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -17,6 +24,8 @@ AS_OF_DATE = date(2026, 8, 23)
 NULL_VALUE = r"\N"
 MONEY = Decimal("0.01")
 
+# These definitions are shared by the generator and both Fabric loaders so the
+# exported column order and target type mappings remain aligned.
 TABLE_FIELDS = {
     "customer_dim": [
         "customer_id",
@@ -296,4 +305,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -9,6 +9,13 @@
 
 # CELL ********************
 
+"""Fabric notebook that converts Netezza-style exports into Delta tables.
+
+The deployment script replaces the Lakehouse placeholder before publishing this
+source as a notebook. The notebook casts source columns, overwrites the demo
+tables, and writes a reconciliation report back to OneLake.
+"""
+
 import json
 
 from notebookutils import mssparkutils
@@ -45,6 +52,7 @@ casts = {
     },
 }
 
+# Keep each typed frame available for cross-table reconciliation after writes.
 frames = {}
 for table_name, table_casts in casts.items():
     frame = (
@@ -101,4 +109,3 @@ mssparkutils.fs.put(
     True,
 )
 display(spark.createDataFrame([report["row_counts"]]))
-

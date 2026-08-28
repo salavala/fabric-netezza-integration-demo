@@ -1,3 +1,10 @@
+"""Deploy and run the Fabric-hosted OneLake Iceberg Table API demonstration.
+
+The script publishes a Fabric Environment containing PyIceberg, builds a
+workspace notebook bound to that environment, runs it, and validates its
+Lakehouse query results. Warehouse discovery is optional.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -17,6 +24,8 @@ EXPECTED_COUNTS = {
     "order_line_fact": 4440,
 }
 ENVIRONMENT_NAME = "Netezza PyIceberg Environment"
+# Fabric Environment accepts a Conda-compatible YAML document when importing
+# external libraries into the staging runtime.
 ENVIRONMENT_YML = """name: netezza-pyiceberg
 dependencies:
   - pip:
@@ -30,6 +39,8 @@ def upsert_environment(
     workspace_id: str,
     display_name: str,
 ) -> dict[str, Any]:
+    """Create or update and publish the reusable PyIceberg environment."""
+
     environment = client.find_item(workspace_id, display_name, "Environment")
     if not environment:
         response = client.fabric.post(

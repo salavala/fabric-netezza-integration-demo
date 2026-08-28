@@ -1,3 +1,5 @@
+"""Tests for safe Iceberg identifiers and generated Fabric notebook content."""
+
 from __future__ import annotations
 
 import base64
